@@ -1,5 +1,6 @@
 import json
-from typing import Optional
+import os
+from typing import Optional, List
 import boto3
 from botocore.exceptions import ClientError
 
@@ -14,6 +15,7 @@ class S3Manager():
         self.bucket_name = bucket_name
         self.key = key
         self.data_model = data_model
+        self.csv_service = CSVService
 
         if not self._key_exists():
             self._upload_empty_csv()
@@ -30,7 +32,7 @@ class S3Manager():
             return False
     
     def _upload_empty_csv(self):
-        body = CSVService.create_empty_csv_body(self.data_model)
+        body = self.csv_service.create_empty_csv_body(self.data_model)
         self.s3.put_object(
             Bucket=self.bucket_name,
             Key=self.key,
@@ -38,7 +40,7 @@ class S3Manager():
         )
         
     def _empty_csv_size(self) -> int:
-        return len(CSVService.create_empty_csv_body(self.data_model))
+        return len(self.csv_service.create_empty_csv_body(self.data_model))
     
     def has_entries_online(self) -> bool:
         empty_size = self._empty_csv_size()
@@ -87,3 +89,23 @@ class S3Manager():
                 d = json.loads(records)
         
         return d.get("_1")
+
+    def append(self, rows: List[object]):
+        filename = f'tmp/{self.key}'
+        self._download_file(filename)
+        self.csv_service.append_to_file(filename, rows, self.data_model)
+        self._upload_file(filename)
+        self._remove_local_file(filename)
+        
+    def _download_file(self, filename: str):
+        with open(filename, 'wb') as f:
+            self.s3.download_fileobj(self.bucket_name, self.key, f)
+    
+    def _upload_file(self, filename: str):
+        with open(filename, 'rb') as f:
+            self.s3.upload_fileobj(f, self.bucket_name, self.key)
+    
+    def _remove_local_file(self, filename: str):
+        os.remove(filename)
+
+

@@ -15,16 +15,20 @@ PARAMETER_SERVICE = ParameterService()
 # @rollbar.lambda_function
 def handler(event, context):
     s3_manager = S3Manager(RUNS_BUCKET_NAME, 'runs.csv', Run)
+    endomondo = Endomondo()
     
     if s3_manager.has_entries_online():
-        max_runs_to_get = 5
+        runs = endomondo.get_runs(5)
+        max_id_in_s3 = s3_manager.get_max_int()
     else:
-        max_runs_to_get = 9999
+        runs = endomondo.get_runs(9999)
+        max_id_in_s3 = 0
 
-    endomondo = Endomondo()
-    runs = endomondo.get_runs(max_runs_to_get)
+    runs_to_upload = [r for r in runs if r.get_id() > max_id_in_s3 ]
+    if runs_to_upload:
+        # pay first
+        s3_manager.append(runs_to_upload)
 
-    max_id_in_s3 = s3_manager.get_max_int()
     
 
 

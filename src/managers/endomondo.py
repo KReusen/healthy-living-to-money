@@ -65,7 +65,6 @@ class Endomondo():
     
     def get_runs(self, maxresults: int = 25) -> List[Run]:
         url = f"https://api.mobile.endomondo.com/mobile/api/workouts?authToken={self.config.get('auth_key')}&maxResults={maxresults}&fields=basic"
-        print(url)
         r = requests.get(url)
         response = r.json()
 
@@ -74,7 +73,7 @@ class Endomondo():
             # only get runs
             if workout["sport"] == 0 and workout["live"] == False:
                 run = Run(
-                    run_id = workout["owner"]["id"],
+                    run_id = workout["id"],
                     distance = workout["distance"]
                 )
                 runs.append(run)
