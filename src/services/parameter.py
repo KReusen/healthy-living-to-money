@@ -38,4 +38,15 @@ class ParameterService():
             Type='SecureString',
             Overwrite=True,
         )
+    
+    def exists(self, path: str, decryption: bool = True) -> bool:
+        try:
+            self.ssm.get_parameter(
+                Name=path,
+                WithDecryption=decryption
+            )
+            return True
+        except ClientError as e:
+            if e.response['Error']['Code'] == "ParameterNotFound":
+                return False
 

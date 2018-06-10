@@ -43,4 +43,5 @@ def create_payment_info_from_runs(runs: List[Run], multiplier: int = 1):
 if __name__ == "__main__":
     # handler(None, None)
     bunq_manager = BunqManager()
+    # bunq_manager.create_api_context()
     # secret_service = SecretService()
