@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, Union
 
 class Run(NamedTuple):
     run_id: int
@@ -6,3 +6,6 @@ class Run(NamedTuple):
 
     def to_dict(self) -> dict:
         return self._asdict()
+    
+    def get_id(self) -> Union[str, int]:
+        return self.run_id
