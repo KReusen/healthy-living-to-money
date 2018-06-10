@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Runs to gadgetfund stack
+Parameters:
+  Environment:
+    Type: String
+    Description: Staging or Production.
+
+Resources:
+  RunsBucket: 
+    Type: AWS::S3::Bucket
+
+  RunsToGadgetfund:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Transfers money upon kilometers tracked by endomondo
+      Handler: handlers.runs_to_gadgetfund.handler
+      Runtime: python3.6
+      CodeUri: ../_build/
+      Timeout: 300
+      MemorySize: 128
+      Environment:
+        Variables:
+          RUNS_BUCKET: 
+            Ref: RunsBucket
+      Policies:
+        - AmazonS3FullAccess
+        - AmazonSSMFullAccess
+      # Events:
+      #   Timer:
+      #     Type: Schedule
+      #     Properties:
+      #       Schedule: rate(12 hours)
