@@ -1,3 +1,6 @@
 .env/
 _build/
 .vscode/
+src/managers/__pycache__/
+src/services/__pycache__/
+src/models/__pycache__/

@@ -8,7 +8,7 @@ class SecretService():
         self.sm = boto3.client('secretsmanager')
     
     def store(self, name: str, data: str):
-        if self._secret_exists(name):
+        if self.secret_exists(name):
             self._put_secret(name, data)
         else:
             self._create_secret(name, data)
@@ -25,7 +25,7 @@ class SecretService():
             SecretString=data
         )
     
-    def _secret_exists(self, name: str) -> bool:
+    def secret_exists(self, name: str) -> bool:
         try:
             self.sm.get_secret_value(
                 SecretId=name

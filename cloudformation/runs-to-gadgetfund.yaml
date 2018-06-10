@@ -26,6 +26,7 @@ Resources:
       Policies:
         - AmazonS3FullAccess
         - AmazonSSMFullAccess
+        - SecretsManagerReadWrite
       # Events:
       #   Timer:
       #     Type: Schedule
