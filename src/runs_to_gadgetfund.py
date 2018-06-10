@@ -1,6 +1,7 @@
 import os
 import rollbar
 from services.parameter import ParameterService
+from managers.endomondo import Endomondo
 
 RUNS_BUCKET = os.environ.get('RUNS_BUCKET')
 PARAMETER_SERVICE = ParameterService()
@@ -10,7 +11,10 @@ PARAMETER_SERVICE = ParameterService()
 
 # @rollbar.lambda_function
 def handler(event, context):
-    print(event)
+    endomondo = Endomondo()
+    runs = endomondo.get_runs(1)
+
+    
 
 
 if __name__ == "__main__":

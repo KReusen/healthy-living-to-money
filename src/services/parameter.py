@@ -30,4 +30,12 @@ class ParameterService():
             name = p["Name"].split(path)[-1]
             values[name] = p["Value"]
         return values
+    
+    def store(self, path: str, value: str):
+        self.ssm.put_parameter(
+            Name=path,
+            Value=value,
+            Type='SecureString',
+            Overwrite=True,
+        )
 
