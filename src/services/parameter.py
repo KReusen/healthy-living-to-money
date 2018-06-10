@@ -1,15 +1,23 @@
 import boto3
+from botocore.exceptions import ClientError
+
+class ParameterNotFound(Exception):
+    pass
 
 class ParameterService():
     def __init__(self):
         self.ssm = boto3.client('ssm')
 
     def get(self, path: str, decryption: bool = True):
-        response = self.ssm.get_parameter(
-            Name=path,
-            WithDecryption=decryption
-        )
-        return response["Parameter"]["Value"]
+        try:
+            response = self.ssm.get_parameter(
+                Name=path,
+                WithDecryption=decryption
+            )
+            return response["Parameter"]["Value"]
+        except ClientError as e:
+            if e.response['Error']['Code'] == "ParameterNotFound":
+                raise(ParameterNotFound)
 
     def get_multiple(self, path: str, decryption: bool = True) -> dict:
         response = self.ssm.get_parameters_by_path(
