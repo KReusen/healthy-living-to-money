@@ -65,6 +65,7 @@ class Endomondo():
     
     def get_runs(self, maxresults: int = 25) -> List[Run]:
         url = f"https://api.mobile.endomondo.com/mobile/api/workouts?authToken={self.config.get('auth_key')}&maxResults={maxresults}&fields=basic"
+        print(url)
         r = requests.get(url)
         response = r.json()
 
