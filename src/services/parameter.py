@@ -17,7 +17,7 @@ class ParameterService():
             return response["Parameter"]["Value"]
         except ClientError as e:
             if e.response['Error']['Code'] == "ParameterNotFound":
-                raise(ParameterNotFound)
+                raise ParameterNotFound(f"Could not find the following parameter: {path}")
 
     def get_multiple(self, path: str, decryption: bool = True) -> dict:
         response = self.ssm.get_parameters_by_path(
