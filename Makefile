@@ -4,6 +4,7 @@ endif
 
 STACK_NAME=runs-to-gadgetfund-$(ENV)
 DEPLOYMENTS_BUCKET=kees-deployments
+AWS_PROFILE=$(AWS_DEFAULT_PROFILE)
 
 ifeq ($(ENV),production)
 	Environment=Production
@@ -16,7 +17,8 @@ build:
 	pip install -r requirements.txt --target _build --upgrade
 
 package:
-	cp -R src/* _build/
+	cp -R src/* _build
+	echo $(STACK_NAME) > _build/STACK_NAME
 	aws cloudformation package \
 		--template-file cloudformation/runs-to-gadgetfund.yaml \
 		--s3-bucket $(DEPLOYMENTS_BUCKET) \
@@ -27,17 +29,15 @@ deploy:
 		--template-file _build/packaged-cloudformation-template.yaml \
 		--stack-name $(STACK_NAME) \
 		--capabilities CAPABILITY_IAM \
-		--parameter-overrides Environment=$(Environment)
+
+deploy-docker:
+	docker build -t runs-to-gadgetfund .
+	docker run \
+		-e "ENV=$(ENV)" \
+		-e "AWS_DEFAULT_PROFILE=$(AWS_PROFILE)" \
+		-v $(HOME)/.aws:/root/.aws \
+		--rm \
+		-it runs-to-gadgetfund make package deploy
 
 clean:
-	find . -name \*.pyc -exec rm -rf {} \;
-	find src/ test* -name "__pycache__" -exec rm -rf {} \;
-	
-test:
-	PYTHONPATH=./src py.test tests
-
-test-v:
-	PYTHONPATH=./src py.test tests -vv
-
-test-integration:
-	STACK_NAME=$(STACK_NAME) PYTHONPATH=./src py.test tests_integration --fulltrace
+	find . -name "__pycache__" -exec rm -rf {} \;

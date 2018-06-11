@@ -1,25 +1,28 @@
-from typing import NamedTuple, Union
+from typing import NamedTuple, Union, Optional, List
+from dataclasses import dataclass
+from utils import get_field_names_from_data_model
 
-class Run(NamedTuple):
+@dataclass
+class Run:
     id: int
-    altitude_max: int
-    heart_rate_avg: int
-    heart_rate_max: int
     distance: float
-    speed_avg: float
-    speed_max: float
     calories: int
     duration: int
-    altitude_min: int
     start_time: str
-    descent: int
-    ascent: int
-    hydration: float
     burgers_burned: float
+    speed_avg: Optional[float] = None
+    speed_max: Optional[float] = None
+    descent: Optional[int] = None
+    ascent: Optional[int] = None
+    altitude_max: Optional[int] = None
+    altitude_min: Optional[int] = None
+    hydration: Optional[float] = None
+    heart_rate_avg: Optional[int] = None
+    heart_rate_max: Optional[int] = None
 
 
     def to_dict(self) -> dict:
-        return self._asdict()
+        return self.__dict__
     
     def get_id(self) -> Union[str, int]:
         return self.id
@@ -27,9 +30,12 @@ class Run(NamedTuple):
     def get_rounded_distance(self) -> float:
         return round(self.distance, 2)
 
+    def get_field_names(self) -> List[str]:
+        return [key for key in self.__dict__ ]
+
 
 def create_workout_from_dict(workout_model: object, d: dict) -> object:
-    allowed_keys = workout_model._fields
+    allowed_keys = get_field_names_from_data_model(workout_model)
     safe_dict = {}
     for key, value in d.items():
         if key in allowed_keys:

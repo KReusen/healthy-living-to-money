@@ -91,7 +91,7 @@ class S3Manager():
         return d.get("_1")
 
     def append(self, rows: List[object]):
-        filename = f'tmp/{self.key}'
+        filename = f'/tmp/{self.key}'
         self._download_file(filename)
         self.csv_service.append_to_file(filename, rows, self.data_model)
         self._upload_file(filename)
