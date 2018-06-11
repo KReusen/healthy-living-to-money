@@ -32,7 +32,7 @@ def handler(event, context):
     runs_to_upload = [r for r in runs if r.get_id() > max_id_in_s3 ]
     if runs_to_upload:
         runs_to_money.pay_out_runs(runs_to_upload)
-        s3_manager.append(runs_to_upload)
+        # s3_manager.append(runs_to_upload)
 
 if __name__ == "__main__":
     handler(None, None)
