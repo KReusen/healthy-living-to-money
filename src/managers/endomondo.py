@@ -5,7 +5,7 @@ import uuid, socket
 from typing import List
 
 from services.parameter import ParameterService
-from models.workout import Run
+from models.workout import Run, create_workout_from_dict
 
 class ConfigError(Exception):
     pass
@@ -72,10 +72,7 @@ class Endomondo():
         for workout in response["data"]:
             # only get runs
             if workout["sport"] == 0 and workout["live"] == False:
-                run = Run(
-                    run_id = workout["id"],
-                    distance = workout["distance"]
-                )
+                run = create_workout_from_dict(Run, workout)
                 runs.append(run)
         
         return runs
