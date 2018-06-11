@@ -9,3 +9,6 @@ class Run(NamedTuple):
     
     def get_id(self) -> Union[str, int]:
         return self.run_id
+    
+    def get_rounded_distance(self) -> float:
+        return round(self.distance, 2)

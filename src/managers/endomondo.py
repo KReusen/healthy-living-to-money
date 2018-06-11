@@ -5,7 +5,7 @@ import uuid, socket
 from typing import List
 
 from services.parameter import ParameterService
-from models.run import Run
+from models.workout import Run
 
 class ConfigError(Exception):
     pass
