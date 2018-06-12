@@ -6,6 +6,8 @@ from botocore.exceptions import ClientError
 
 from services.csv import CSVService
 
+from utils import get_field_names_from_data_model
+
 class NoEntriesError(Exception):
     pass
 
@@ -60,7 +62,7 @@ class S3Manager():
             raise NoEntriesError("File has no entries, so cannot have a max int value either")
 
         # get id from first key in data model if it wasn't passed in kwargs
-        column_name = kwargs.get('column_name', self.data_model._fields[0])
+        column_name = kwargs.get('column_name', get_field_names_from_data_model(self.data_model)[0])
         return self._query_max_int(column_name)
         
     def _query_max_int(self, column_name: str) -> int:
