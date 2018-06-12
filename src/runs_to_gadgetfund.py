@@ -20,7 +20,6 @@ rollbar.init(rollbar_key, 'runs-to-gadgetfund')
 def handler(event, context):
     s3_manager = S3Manager(RUNS_BUCKET_NAME, 'runs.csv', Run)
     endomondo = Endomondo()
-    runs_to_money = RunsToMoney()
     
     if s3_manager.has_entries_online():
         runs = endomondo.get_runs(5)
@@ -31,6 +30,7 @@ def handler(event, context):
 
     runs_to_upload = [r for r in runs if r.get_id() > max_id_in_s3 ]
     if runs_to_upload:
+        runs_to_money = RunsToMoney()
         runs_to_money.pay_out_runs(runs_to_upload)
         s3_manager.append(runs_to_upload)
 
