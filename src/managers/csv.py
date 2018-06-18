@@ -5,7 +5,7 @@ from typing import List
 
 from utils import get_field_names_from_data_model
 
-class CSVService():
+class CSVManager():
 
     @staticmethod
     def create_empty_csv_body(data_model: object) -> bytes:

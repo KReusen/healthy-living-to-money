@@ -4,7 +4,7 @@ from typing import Optional, List
 import boto3
 from botocore.exceptions import ClientError
 
-from services.csv import CSVService
+from managers.csv import CSVManager
 
 from utils import get_field_names_from_data_model
 
@@ -17,7 +17,7 @@ class S3Manager():
         self.bucket_name = bucket_name
         self.key = key
         self.data_model = data_model
-        self.csv_service = CSVService
+        self.csv_manager = CSVManager
 
         if not self._key_exists():
             self._upload_empty_csv()
@@ -34,7 +34,7 @@ class S3Manager():
             return False
     
     def _upload_empty_csv(self):
-        body = self.csv_service.create_empty_csv_body(self.data_model)
+        body = self.csv_manager.create_empty_csv_body(self.data_model)
         self.s3.put_object(
             Bucket=self.bucket_name,
             Key=self.key,
@@ -42,7 +42,7 @@ class S3Manager():
         )
         
     def _empty_csv_size(self) -> int:
-        return len(self.csv_service.create_empty_csv_body(self.data_model))
+        return len(self.csv_manager.create_empty_csv_body(self.data_model))
     
     def has_entries_online(self) -> bool:
         empty_size = self._empty_csv_size()
@@ -95,7 +95,7 @@ class S3Manager():
     def append(self, rows: List[object]):
         filename = f'/tmp/{self.key}'
         self._download_file(filename)
-        self.csv_service.append_to_file(filename, rows, self.data_model)
+        self.csv_manager.append_to_file(filename, rows, self.data_model)
         self._upload_file(filename)
         self._remove_local_file(filename)
         

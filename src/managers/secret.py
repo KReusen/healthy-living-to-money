@@ -3,7 +3,7 @@ import json
 import boto3
 from botocore.exceptions import ClientError
 
-class SecretService():
+class SecretManager():
     def __init__(self):
         self.sm = boto3.client('secretsmanager')
     

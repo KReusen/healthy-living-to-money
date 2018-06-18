@@ -12,17 +12,17 @@ from bunq.sdk.exception import BunqException
 from bunq.sdk.model.generated import endpoint
 from bunq.sdk.model.generated.object_ import Pointer, Amount, NotificationFilter
 
-from services.parameter import ParameterService
+from managers.parameter import ParameterManager
 
-from models.bunq import PaymentInfo
+from models.payment_info import PaymentInfo
 
-class BunqManager():
+class BunqService():
     def __init__(self):
-        self.parameter_service = ParameterService()
+        self.parameter_manager = ParameterManager()
         self._authenticate()
 
     def _authenticate(self):
-        if self.parameter_service.exists("/bunq/api_context"):
+        if self.parameter_manager.exists("/bunq/api_context"):
             self.api_context = self._get_api_context_from_aws()
             self._ensure_active_session()
         else:
@@ -31,11 +31,11 @@ class BunqManager():
         BunqContext.load_api_context(self.api_context)
 
     def _get_api_context_from_aws(self) -> ApiContext:
-        json_string = self.parameter_service.get("/bunq/api_context")
+        json_string = self.parameter_manager.get("/bunq/api_context")
         return ApiContext.from_json(json_string)
 
     def _create_api_context(self) -> ApiContext:
-        api_key = self.parameter_service.get('/bunq/api_key')
+        api_key = self.parameter_manager.get('/bunq/api_key')
         api_context = ApiContext(
             ApiEnvironmentType.PRODUCTION, 
             api_key,
@@ -50,7 +50,7 @@ class BunqManager():
             self._update_remote_api_context(self.api_context)
     
     def _update_remote_api_context(self, api_context: object):
-        self.parameter_service.store("/bunq/api_context", api_context.to_json())
+        self.parameter_manager.store("/bunq/api_context", api_context.to_json())
 
     def make_payment(self, PaymentInfo: object):
         recipient = Pointer('IBAN', PaymentInfo.to_iban, "bunq")

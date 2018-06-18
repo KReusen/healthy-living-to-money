@@ -4,7 +4,7 @@ from botocore.exceptions import ClientError
 class ParameterNotFound(Exception):
     pass
 
-class ParameterService():
+class ParameterManager():
     def __init__(self):
         self.ssm = boto3.client('ssm')
 

@@ -4,8 +4,10 @@ import uuid, socket
 
 from typing import List
 
-from services.parameter import ParameterService
+from managers.parameter import ParameterManager
 from models.workout import Run, create_workout_from_dict
+
+from utils import create_model_from_dict
 
 class ConfigError(Exception):
     pass
@@ -13,9 +15,9 @@ class ConfigError(Exception):
 class AuthenticationError(Exception):
     pass
 
-class Endomondo():
+class EndomondoService():
     def __init__(self):
-        self.parameter_service = ParameterService()
+        self.parameter_manager = ParameterManager()
         self.config = self._get_config()
         if not all (k in self.config for k in ("email","password")):
             raise ConfigError("""Please put the following paths and their 
@@ -27,13 +29,13 @@ class Endomondo():
         self._authenticate()
 
     def _get_config(self):
-        return self.parameter_service.get_multiple('/endomondo/')
+        return self.parameter_manager.get_multiple('/endomondo/')
 
     def _authenticate(self):
         auth_key = self.config.get("auth_key")
         if not auth_key:
             auth_key = self._get_key()
-            self.parameter_service.store('/endomondo/auth_key', auth_key)
+            self.parameter_manager.store('/endomondo/auth_key', auth_key)
     
     def _get_key(self) -> str:
         url = 'https://api.mobile.endomondo.com/mobile/auth'
@@ -72,7 +74,7 @@ class Endomondo():
         for workout in response["data"]:
             # only get runs
             if workout["sport"] == 0 and workout["live"] == False:
-                run = create_workout_from_dict(Run, workout)
+                run = create_model_from_dict(Run, workout)
                 runs.append(run)
         
         return runs

@@ -32,12 +32,3 @@ class Run:
 
     def get_field_names(self) -> List[str]:
         return [key for key in self.__dict__ ]
-
-
-def create_workout_from_dict(workout_model: object, d: dict) -> object:
-    allowed_keys = get_field_names_from_data_model(workout_model)
-    safe_dict = {}
-    for key, value in d.items():
-        if key in allowed_keys:
-            safe_dict[key] = value
-    return workout_model(**safe_dict)
