@@ -3,6 +3,8 @@ import rollbar
 from typing import List
 
 from services.money import PaymentProvider
+from services.multiplier import BasicMultiplier
+from services.banking import BunqService
 from services.endomondo import EndomondoService
 
 from managers.parameter import ParameterManager
@@ -30,7 +32,13 @@ def handler(event, context):
 
     runs_to_upload = [r for r in runs if r.get_id() > max_id_in_s3 ]
     if runs_to_upload:
-        payment_provider = PaymentProvider()
+        config = {
+            "bank_service": BunqService(),
+            "from_iban": PARAMETER_MANAGER.get('/bunq/from_iban'),
+            "to_iban": PARAMETER_MANAGER.get('/bunq/to_iban'),
+            "multiplier": BasicMultiplier()
+        }
+        payment_provider = PaymentProvider(config)
         payment_provider.pay_out(runs_to_upload)
         s3_manager.append(runs_to_upload)
 

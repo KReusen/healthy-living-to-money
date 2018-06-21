@@ -23,27 +23,14 @@ class PaymentProvider():
         self.to_iban = config.get("to_iban")
         self.multiplier = config.get("multiplier")
     
-    def pay_out(self, model: object, data: List[Run]):
+    def pay_out(self, data: List[object]):
         payment_jobs = self.create_payment_jobs(data, self.multiplier)
         for payment_job in payment_jobs:
-            self.bank_service.make_payment(payment_job)
-        
-    # def create_payment_jobs(self, data: List[object], multiplier: object) -> List[PaymentInfo]:
-    #     payment_jobs = []
-    #     for entry in data:
-    #         payment_jobs.append(
-    #             PaymentInfo(
-    #                 amount_string = multiplier.get_amount(entry),
-    #                 description = f'Because you ran {entry.get_rounded_distance()} km!',
-    #                 to_iban = self.to_iban,
-    #                 from_iban = self.from_iban
-    #             )
-    #         )
-    #     return payment_jobs
-    
+            # self.bank_service.make_payment(payment_job)
+            pass
 
     def create_payment_jobs(self, data: List[object], multiplier: object) -> List[PaymentInfo]:
-        pass
+        return [self.create_payment_info(datamodel, multiplier) for datamodel in data ]
     
     def create_payment_info(self, datamodel: object, multiplier: object):
         amount_string, from_iban, to_iban = self.create_amount_from_and_to_ibans(datamodel, multiplier)

@@ -48,7 +48,6 @@ def dummy_config():
 
 class TestPaymentProvider():
 
-
     def test_create_amount_from_and_to_ibans_run(self, dummy_run, dummy_multiplier, dummy_config) -> str:
         expected_amount_string = "2.35"
         expected_from_iban = "from123"
@@ -123,3 +122,28 @@ class TestPaymentProvider():
         result = payment_provider.create_payment_info(dummy_run, dummy_multiplier)
         
         assert str(expected) == str(result)
+
+    def test_create_payment_jobs(self, dummy_config, dummy_run, dummy_multiplier):
+        weights = Weights(old=80.5, new=80)
+
+        l = [
+            weights,
+            dummy_run
+        ]
+
+        payment_provider = PaymentProvider(dummy_config)
+        result = payment_provider.create_payment_jobs(l, dummy_multiplier)
+
+        assert str(result[0]) == str(PaymentInfo(
+            amount_string='0.5', 
+            description='Because you lost 0.5 kg!', 
+            to_iban='to123', 
+            from_iban='from123'
+        ))
+
+        assert str(result[1]) == str(PaymentInfo(
+            amount_string='2.35', 
+            description='Because you ran 2.35 km!', 
+            to_iban='to123', 
+            from_iban='from123'
+        ))
