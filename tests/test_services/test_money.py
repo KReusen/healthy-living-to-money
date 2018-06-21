@@ -6,6 +6,7 @@ from services.money import PaymentProvider
 from services.multiplier import BasicMultiplier
 
 from models.workout import Run
+from models.body import Weights
 from models.payment_info import PaymentInfo
 
 from exceptions.money import PaymentDescriptionNotImplemented
@@ -22,47 +23,103 @@ def dummy_run():
     )
 
 @pytest.fixture
+def dummy_weights():
+    return Weights(
+        old=80.5,
+        new=80
+    )
+
+@pytest.fixture
 def dummy_multiplier():
     return BasicMultiplier()
+
+@pytest.fixture
+def dummy_weight_multiplier():
+    return BasicMultiplier(10)
 
 @pytest.fixture
 def dummy_config():
     return {
         "bank_service": None,
-        "from_iban_parameter": '/bunq/from_iban',
-        "to_iban_parameter": '/bunq/to_iban',
+        "from_iban": 'from123',
+        "to_iban": 'to123',
         "multiplier": BasicMultiplier()
-    }
-
-@pytest.fixture
-def dummy_parameter_manager():
-    config = dummy_config()
-    return {
-        config["from_iban_parameter"]: config["from_iban_parameter"],
-        config["to_iban_parameter"]: config["to_iban_parameter"]
     }
 
 class TestPaymentProvider():
 
-    @patch('services.money.ParameterManager')
-    def test_create_payment_description(self, mock_parameter_manager, dummy_parameter_manager, dummy_run, dummy_config):
-        mock_parameter_manager.return_value = dummy_parameter_manager
+
+    def test_create_amount_from_and_to_ibans_run(self, dummy_run, dummy_multiplier, dummy_config) -> str:
+        expected_amount_string = "2.35"
+        expected_from_iban = "from123"
+        expected_to_iban = "to123"
+
+        payment_provider = PaymentProvider(dummy_config)
+        amount_string, from_iban, to_iban = payment_provider.create_amount_from_and_to_ibans(dummy_run, dummy_multiplier)
+        
+        assert amount_string == expected_amount_string
+        assert from_iban == expected_from_iban
+        assert to_iban == expected_to_iban
+
+    def test_create_amount_from_and_to_ibans_weightgain(self, dummy_weight_multiplier, dummy_config) -> str:
+        weights = Weights(old=80, new=80.5)
+        expected_amount_string = "5.0"
+        expected_from_iban = "to123"
+        expected_to_iban = "from123"
+
+        payment_provider = PaymentProvider(dummy_config)
+        amount_string, from_iban, to_iban = payment_provider.create_amount_from_and_to_ibans(weights, dummy_weight_multiplier)
+        
+        assert amount_string == expected_amount_string
+        assert from_iban == expected_from_iban
+        assert to_iban == expected_to_iban
+    
+    def test_create_amount_from_and_to_ibans_weightloss(self, dummy_weight_multiplier, dummy_config) -> str:
+        weights = Weights(old=80.5, new=80)
+        expected_amount_string = "5.0"
+        expected_from_iban = "from123"
+        expected_to_iban = "to123"
+
+        payment_provider = PaymentProvider(dummy_config)
+        amount_string, from_iban, to_iban = payment_provider.create_amount_from_and_to_ibans(weights, dummy_weight_multiplier)
+        
+        assert amount_string == expected_amount_string
+        assert from_iban == expected_from_iban
+        assert to_iban == expected_to_iban
+
+    def test_create_payment_description_run(self, dummy_run, dummy_config, dummy_multiplier):
         expected = "Because you ran 2.35 km!"
         payment_provider = PaymentProvider(dummy_config)
-        result = payment_provider.create_payment_description("2.35", dummy_run)
+        result = payment_provider.create_payment_description(dummy_run)
         assert result == expected
 
-    @patch('services.money.ParameterManager')
-    def test_create_payment_description_unknown_model(self, mock_parameter_manager, dummy_parameter_manager, dummy_config):
-        mock_parameter_manager.return_value = dummy_parameter_manager
+    def test_create_payment_description_unknown_model(self, dummy_config):
         payment_provider = PaymentProvider(dummy_config)
         with pytest.raises(PaymentDescriptionNotImplemented):
-            payment_provider.create_payment_description("2.35", "abc")
+            payment_provider.create_payment_description("abc")
 
-    @patch('services.money.ParameterManager')
-    def test_create_amount_string(self, mock_parameter_manager, dummy_run, dummy_multiplier, dummy_parameter_manager, dummy_config) -> str:
-        mock_parameter_manager.return_value = dummy_parameter_manager
-        expected = "2.35"
+    def test_create_payment_description_weightloss(self, dummy_config, dummy_multiplier):
+        weights = Weights(old=80.5, new=80)
+        expected = "Because you lost 0.5 kg!"
         payment_provider = PaymentProvider(dummy_config)
-        result = payment_provider.create_amount_string(dummy_run, dummy_multiplier)
+        result = payment_provider.create_payment_description(weights)
         assert result == expected
+
+    def test_create_payment_description_weightgain(self, dummy_config, dummy_multiplier):
+        weights = Weights(old=80, new=80.5)
+        expected = "Because you gained 0.5 kg!"
+        payment_provider = PaymentProvider(dummy_config)
+        result = payment_provider.create_payment_description(weights)
+        assert result == expected
+
+    def test_create_payment_info(self, dummy_config, dummy_run, dummy_multiplier):
+        expected = PaymentInfo(
+            amount_string='2.35',
+            description='Because you ran 2.35 km!',
+            from_iban='from123',
+            to_iban='to123'
+        )
+        payment_provider = PaymentProvider(dummy_config)
+        result = payment_provider.create_payment_info(dummy_run, dummy_multiplier)
+        
+        assert str(expected) == str(result)
