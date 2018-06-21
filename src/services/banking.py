@@ -19,9 +19,8 @@ from models.payment_info import PaymentInfo
 class BunqService():
     def __init__(self):
         self.parameter_manager = ParameterManager()
-        self._authenticate()
 
-    def _authenticate(self):
+    def authenticate(self):
         if self.parameter_manager.exists("/bunq/api_context"):
             self.api_context = self._get_api_context_from_aws()
             self._ensure_active_session()

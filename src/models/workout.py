@@ -26,9 +26,9 @@ class Run:
     
     def get_id(self) -> Union[str, int]:
         return self.id
-    
-    def get_rounded_distance(self) -> float:
-        return round(self.distance, 2)
 
     def get_field_names(self) -> List[str]:
         return [key for key in self.__dict__ ]
+    
+    def payout_units(self) -> float:
+        return round(self.distance, 2)

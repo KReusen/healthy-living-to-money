@@ -1,7 +1,9 @@
 import pytest
 
-from services.money import PaymentProvider, PaymentDescriptionNotImplemented
-from services.multiplier import BasicRunMultiplier
+from unittest.mock import ANY, patch
+
+from services.money import PaymentProvider
+from services.multiplier import BasicMultiplier
 
 from models.workout import Run
 from models.payment_info import PaymentInfo
@@ -21,23 +23,46 @@ def dummy_run():
 
 @pytest.fixture
 def dummy_multiplier():
-    return BasicRunMultiplier()
+    return BasicMultiplier()
 
-class TestPaymentProvider:
+@pytest.fixture
+def dummy_config():
+    return {
+        "bank_service": None,
+        "from_iban_parameter": '/bunq/from_iban',
+        "to_iban_parameter": '/bunq/to_iban',
+        "multiplier": BasicMultiplier()
+    }
 
-    def test_create_payment_description(self, dummy_run):
+@pytest.fixture
+def dummy_parameter_manager():
+    config = dummy_config()
+    return {
+        config["from_iban_parameter"]: config["from_iban_parameter"],
+        config["to_iban_parameter"]: config["to_iban_parameter"]
+    }
+
+class TestPaymentProvider():
+
+    @patch('services.money.ParameterManager')
+    def test_create_payment_description(self, mock_parameter_manager, dummy_parameter_manager, dummy_run, dummy_config):
+        mock_parameter_manager.return_value = dummy_parameter_manager
         expected = "Because you ran 2.35 km!"
-        payment_provider = PaymentProvider()
+        payment_provider = PaymentProvider(dummy_config)
         result = payment_provider.create_payment_description("2.35", dummy_run)
         assert result == expected
 
-    def test_create_payment_description_unknown_model(self):
-        payment_provider = PaymentProvider()
+    @patch('services.money.ParameterManager')
+    def test_create_payment_description_unknown_model(self, mock_parameter_manager, dummy_parameter_manager, dummy_config):
+        mock_parameter_manager.return_value = dummy_parameter_manager
+        payment_provider = PaymentProvider(dummy_config)
         with pytest.raises(PaymentDescriptionNotImplemented):
             payment_provider.create_payment_description("2.35", "abc")
 
-    def test_create_amount_string(self, dummy_run, dummy_multiplier) -> str:
+    @patch('services.money.ParameterManager')
+    def test_create_amount_string(self, mock_parameter_manager, dummy_run, dummy_multiplier, dummy_parameter_manager, dummy_config) -> str:
+        mock_parameter_manager.return_value = dummy_parameter_manager
         expected = "2.35"
-        payment_provider = PaymentProvider()
+        payment_provider = PaymentProvider(dummy_config)
         result = payment_provider.create_amount_string(dummy_run, dummy_multiplier)
         assert result == expected

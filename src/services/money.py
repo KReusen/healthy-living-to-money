@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from services.banking import BunqService
-from services.multiplier import BasicRunMultiplier
+from services.multiplier import BasicMultiplier
 
 from managers.parameter import ParameterManager
 
@@ -14,7 +14,7 @@ config = {
     "bank_service": BunqService(),
     "from_iban_parameter": '/bunq/from_iban',
     "to_iban_parameter": '/bunq/to_iban',
-    "multiplier": BasicRunMultiplier()
+    "multiplier": BasicMultiplier()
 }
 
 class PaymentProvider():
@@ -24,6 +24,9 @@ class PaymentProvider():
         self.from_iban = self.parameter_manager.get(config.get("from_iban_parameter"))
         self.to_iban = self.parameter_manager.get(config.get("to_iban_parameter"))
         self.multiplier = config.get("multiplier")
+
+        # print(self.from_iban)
+        # print(self.to_iban)
     
     def pay_out(self, model: object, data: List[Run]):
         payment_jobs = self.create_payment_jobs(data, self.multiplier)
@@ -53,7 +56,7 @@ class PaymentProvider():
 
     def create_payment_description(self, amount_string: str, datamodel: object):
         if isinstance(datamodel, Run):
-            return f"Because you ran {datamodel.get_rounded_distance()} km!"
+            return f"Because you ran {datamodel.payout_units()} km!"
         
         raise PaymentDescriptionNotImplemented(f"Payment description not implemented yet for {datamodel} ")
 
