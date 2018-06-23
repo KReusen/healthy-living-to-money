@@ -6,10 +6,9 @@ from botocore.exceptions import ClientError
 
 from managers.csv import CSVManager
 
-from utils import get_field_names_from_data_model
+from exception.s3 import NoEntriesError
 
-class NoEntriesError(Exception):
-    pass
+from utils import get_field_names_from_data_model
 
 class S3Manager():
     def __init__(self, bucket_name: str, key: str, data_model: object, **kwargs):

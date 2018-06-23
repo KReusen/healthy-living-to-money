@@ -1,0 +1,2 @@
+class NoEntriesError(Exception):
+    pass
