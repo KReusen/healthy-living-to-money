@@ -12,7 +12,7 @@ from managers.s3 import S3Manager
 
 from models.workout import Run
 
-RUNS_BUCKET_NAME = os.environ.get('RUNS_BUCKET')
+HEALTH_DATA_BUCKET_NAME = os.environ.get('HEALTH_DATA_BUCKET_NAME')
 PARAMETER_MANAGER = ParameterManager()
 
 rollbar_key = PARAMETER_MANAGER.get('/rollbar/key')
@@ -20,7 +20,7 @@ rollbar.init(rollbar_key, 'runs-to-gadgetfund')
 
 @rollbar.lambda_function
 def handler(event, context):
-    s3_manager = S3Manager(RUNS_BUCKET_NAME, 'runs.csv', Run)
+    s3_manager = S3Manager(HEALTH_DATA_BUCKET_NAME, 'runs.csv', Run)
     endomondo_service = EndomondoService()
     
     if s3_manager.has_entries_online():
