@@ -1,3 +1,4 @@
+import os
 import boto3
 from botocore.exceptions import ClientError
 
@@ -38,6 +39,15 @@ class ParameterManager():
             Type='SecureString',
             Overwrite=True,
         )
+    
+    def store_multiple(self, prefix_path: str, data: dict):
+        for key, value in data.items():
+            self.ssm.put_parameter(
+                Name=os.path.join(prefix_path, key),
+                Value=value,
+                Type='SecureString',
+                Overwrite=True,
+            )
     
     def exists(self, path: str, decryption: bool = True) -> bool:
         try:
