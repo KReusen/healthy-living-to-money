@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 
 from managers.csv import CSVManager
 
-from exception.s3 import NoEntriesError
+from exceptions.s3 import NoEntriesError
 
 from utils import get_field_names_from_data_model
 
