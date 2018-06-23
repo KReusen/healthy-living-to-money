@@ -16,7 +16,7 @@ HEALTH_DATA_BUCKET_NAME = os.environ.get('HEALTH_DATA_BUCKET_NAME')
 PARAMETER_MANAGER = ParameterManager()
 
 rollbar_key = PARAMETER_MANAGER.get('/rollbar/key')
-rollbar.init(rollbar_key, 'runs-to-gadgetfund')
+rollbar.init(rollbar_key, __file__)
 
 @rollbar.lambda_function
 def handler(event, context):
