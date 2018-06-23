@@ -22,5 +22,5 @@ class CSVManager():
         fieldnames = get_field_names_from_data_model(data_model)
         dictrows = [ row.to_dict() for row in rows ]
         with open(filename, 'a', newline='\n') as f:
-            writer = csv.DictWriter(f, quoting=csv.QUOTE_NONNUMERIC, fieldnames=fieldnames)
+            writer = csv.DictWriter(f, quoting=csv.QUOTE_MINIMAL, fieldnames=fieldnames)
             writer.writerows(dictrows)

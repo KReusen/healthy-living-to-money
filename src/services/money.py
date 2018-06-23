@@ -26,8 +26,7 @@ class PaymentProvider():
     def pay_out(self, data: List[object]):
         payment_jobs = self.create_payment_jobs(data, self.multiplier)
         for payment_job in payment_jobs:
-            # self.bank_service.make_payment(payment_job)
-            pass
+            self.bank_service.make_payment(payment_job)
 
     def create_payment_jobs(self, data: List[object], multiplier: object) -> List[PaymentInfo]:
         return [self.create_payment_info(datamodel, multiplier) for datamodel in data ]
