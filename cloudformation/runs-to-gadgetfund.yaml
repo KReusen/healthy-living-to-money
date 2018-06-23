@@ -10,7 +10,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Description: Transfers money upon kilometers tracked by endomondo
-      Handler: runs_to_gadgetfund.handler
+      Handler: handlers.runs_to_gadgetfund.handler
       Runtime: python3.6
       CodeUri: ../_build/
       Timeout: 300
