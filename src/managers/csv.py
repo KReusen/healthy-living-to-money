@@ -3,7 +3,7 @@ import csv
 
 from typing import List
 
-from utils import get_field_names_from_data_model
+from utils.models import get_field_names_from_data_model
 
 class CSVManager():
 

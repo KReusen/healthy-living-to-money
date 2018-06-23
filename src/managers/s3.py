@@ -8,7 +8,7 @@ from managers.csv import CSVManager
 
 from exceptions.s3 import NoEntriesError
 
-from utils import get_field_names_from_data_model
+from utils.models import get_field_names_from_data_model
 
 class S3Manager():
     def __init__(self, bucket_name: str, key: str, data_model: object, **kwargs):

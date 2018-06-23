@@ -7,7 +7,7 @@ from typing import List
 from managers.parameter import ParameterManager
 from models.workout import Run, create_workout_from_dict
 
-from utils import create_model_from_dict
+from utils.models import create_model_from_dict
 
 class ConfigError(Exception):
     pass

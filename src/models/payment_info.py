@@ -1,7 +1,7 @@
 from typing import List
 from dataclasses import dataclass
 
-from utils import get_field_names_from_data_model
+from utils.models import get_field_names_from_data_model
 
 @dataclass
 class PaymentInfo:
