@@ -1,0 +1,2 @@
+class GoogleFitError(Exception):
+    pass

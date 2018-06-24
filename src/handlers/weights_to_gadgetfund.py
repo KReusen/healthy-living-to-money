@@ -5,9 +5,7 @@ import rollbar
 
 from managers.parameter import ParameterManager
 from managers.s3 import S3Manager
-from managers.google_fit import WeightManager
-
-from services.google_fit import GoogleFitService
+from managers.google_fit import GoogleFitManager
 
 from models.body import WeightEntry, Weights
 
@@ -26,8 +24,9 @@ def handler(event, context):
     if s3_manager.has_entries_online():
         min_nanos = s3_manager.get_max_int(column_name='startTimeNanos')
 
-    google_fit_service = GoogleFitService()
-    access_token = google_fit_service.get_access_token()
+    google_fit_manager = GoogleFitManager()
+    google_fit_manager.authenticate()
 
-    weight_manager = WeightManager(access_token)
-    weights = weight_manager.get_weights(min_nanos)
+
+if __name__ == "__main__":
+    handler(None, None)
