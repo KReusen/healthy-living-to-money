@@ -8,4 +8,5 @@ src/__pycache__/
 .pytest_cache/
 tests/test_services/__pycache__/
 __pycache__/
-*.pyc
+*.py[cod]
+__pycache__/
