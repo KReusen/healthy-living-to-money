@@ -37,7 +37,7 @@ pycodestyle==2.3.1
 pylint==1.8.2
 pytest==3.6.1
 python-dateutil==2.7.2
-PyYAML==3.12
+PyYAML==5.4
 requests==2.18.4
 requests-oauthlib==0.8.0
 rollbar==0.13.18
